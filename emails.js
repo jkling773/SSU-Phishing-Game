@@ -1,8 +1,9 @@
 /*
  * Email content for "Spot the Phish".
  *
- * Main round: every PHISH email + ONE randomly chosen LEGIT email, shuffled.
+ * Main round: the 4 PHISH emails + the LEGIT email, in random order.
  * The player's job is to find the legit one.
+ * (More emails are parked in spare-emails.js, which the game doesn't load.)
  * Bonus round: BONUS_EMAIL arrives after the results screen.
  *
  * Marking red flags in phishing emails:
@@ -14,63 +15,80 @@
  * Legit emails list what made them trustworthy in `checks`.
  */
 
+/*
+ * School branding: name, domains, mascot and help desk used everywhere.
+ * USE_SCHOOL is the default. Any link can override it by adding
+ * ?school=ssu or ?school=generic to the URL (e.g. for the QR code at an SSU event).
+ */
+const SCHOOLS = {
+  ssu: {
+    name: "Salem State",
+    fullName: "Salem State University",
+    short: "SSU",
+    slug: "salemstate", // used to build the fake lookalike domains
+    domain: "salemstate.edu",
+    mascot: "Viking",
+    greetingAll: "Hey Vikings!",
+    playerName: "Sam Viking",
+    playerEmail: "s.viking@salemstate.edu",
+    helpDesk: "the Salem State IT Help Desk",
+  },
+  generic: {
+    name: "State University",
+    fullName: "State University",
+    short: "SU",
+    slug: "stateu",
+    domain: "stateu.edu",
+    mascot: "",
+    greetingAll: "Hey everyone!",
+    playerName: "Sam Taylor",
+    playerEmail: "s.taylor@stateu.edu",
+    helpDesk: "your campus IT Help Desk",
+  },
+};
+
+const USE_SCHOOL = "generic";
+
+const S = SCHOOLS[new URLSearchParams(location.search).get("school")] || SCHOOLS[USE_SCHOOL];
+
 const CONFIG = {
-  playerName: "Sam Viking",
-  playerFirstName: "Sam",
-  playerEmail: "s.viking@salemstate.edu",
-  // Shown on the final screen. Update with Salem State's real reporting instructions.
-  reportTip:
-    "Don't click, don't reply. Report it to the Salem State IT Help Desk, then delete it.",
+  playerName: S.playerName,
+  playerEmail: S.playerEmail,
+  // Shown on the final screen. Update with your school's real reporting instructions.
+  reportTip: `Don't click, don't reply. Report it to ${S.helpDesk}, then delete it.`,
+};
+
+// The real Starbucks giveaway at your table. Match this to the actual event so
+// players who find the real email can go claim their $5 card.
+const EVENT = {
+  where: "at the IT table in the Campus Center",
+  when: "today from 10 AM to 2 PM",
 };
 
 const PHISH_EMAILS = [
   {
     id: "phish-raffle",
     fromName: "University Community Events",
-    fromAddr: "events@salemstate-edu.com",
+    fromAddr: `events@${S.slug}-edu.com`,
     flagSender: 1,
-    subject: "You're invited: this month's campus raffle!",
-    preview: "We're inviting members of the Salem State community to participate…",
+    subject: "You're invited: this month's campus raffle! 🎁",
+    preview: `We're inviting members of the ${S.name} community to participate…`,
     body: `
       <p><span class="flag" data-flag="2">Hello,</span></p>
-      <p>We're inviting members of the Salem State community to participate in this month's campus raffle!</p>
-      <p><span class="flag" data-flag="3">Entry is open now, and spots are limited.</span></p>
+      <p>We're inviting members of the ${S.name} community to participate in this month's campus raffle!
+        Prizes include gift cards, AirPods, and more.</p>
+      <p><span class="flag" data-flag="3">Entry is open now, and spots are limited to the <strong>first 200 people</strong>.</span></p>
       <p><strong>Join the raffle:</strong><br>
-        <a href="#" class="email-btn email-link flag" data-flag="4" data-href="http://salemstate-raffle.com/enter">ENTER RAFFLE</a></p>
-      <p>Don't miss your opportunity to participate.</p>
+        <a href="#" class="email-btn email-link flag" data-flag="4" data-href="http://${S.slug}-raffle.com/enter">ENTER RAFFLE</a></p>
+      <p>Don't miss your opportunity to participate. Once the 200 spots are gone, entry closes.</p>
       <p>Good luck!</p>
       <p><span class="flag" data-flag="5">University Community Events</span></p>`,
     flags: [
-      { title: "Lookalike sender", text: "<b>salemstate-edu.com</b> is not <b>salemstate.edu</b>. Anyone can register a domain that looks close to the real one." },
+      { title: "Lookalike sender", text: `<b>${S.slug}-edu.com</b> is not <b>${S.domain}</b>. Anyone can register a domain that looks close to the real one.` },
       { title: "Generic greeting", text: "It says “Hello,” instead of your name. Campus offices usually know who they're writing to." },
-      { title: "Scarcity pressure", text: "“Spots are limited” is there to rush you before you think it through." },
-      { title: "Suspicious link", text: "The button goes to <b>salemstate-raffle.com</b>, which is not a university website. Links like this often lead to a fake login page." },
-      { title: "No real details", text: "What's the prize? When is the drawing? Who's running it? The email doesn't name an office, a person, or a way to contact anyone." },
-    ],
-  },
-  {
-    id: "phish-starbucks",
-    fromName: "University Community Events",
-    fromAddr: "rewards@ssu-appreciation.net",
-    flagSender: 1,
-    subject: "Free Starbucks gift cards ☕ first 200 only",
-    preview: "As part of a university community appreciation event, we're giving away…",
-    body: `
-      <p>Hello,</p>
-      <p>As part of <span class="flag" data-flag="5">a university community appreciation event</span>,
-        <span class="flag" data-flag="2">we're giving away Starbucks gift cards</span> to the
-        <strong class="flag" data-flag="3">first 200 people who participate</strong>.</p>
-      <p>If you'd like to claim your opportunity, use the link below:</p>
-      <p><strong>Claim Your Gift Card:</strong><br>
-        <a href="#" class="email-btn email-link flag" data-flag="4" data-href="https://starbucks-ssu-rewards.com/claim">CLAIM NOW</a></p>
-      <p>Participation is limited to the first 200 people.</p>
-      <p>Thank you,<br>University Community Events</p>`,
-    flags: [
-      { title: "Sender isn't Salem State", text: "<b>ssu-appreciation.net</b> is not a university address. Real Salem State email comes from <b>@salemstate.edu</b>." },
-      { title: "Too good to be true", text: "Free gift cards for doing nothing is one of the most common hooks. The “prize” is usually your password or payment info." },
-      { title: "Artificial scarcity", text: "“First 200 people” pushes you to click before you think, and they say it twice." },
-      { title: "Suspicious link", text: "“CLAIM NOW” goes to <b>starbucks-ssu-rewards.com</b>, which belongs to neither Starbucks nor Salem State." },
-      { title: "Vague event", text: "Which appreciation event? Hosted by which office? Real announcements give names, dates, and places." },
+      { title: "Scarcity pressure", text: "“Limited to the first 200 people” (and they say it twice) is there to rush you before you think it through." },
+      { title: "Suspicious link", text: `The button goes to <b>${S.slug}-raffle.com</b>, which is not a university website. Links like this often lead to a fake login page.` },
+      { title: "No real details", text: "“Gift cards, AirPods, and more” sounds exciting, but when is the drawing? Who's running it? The email doesn't name an office, a person, or a way to contact anyone." },
     ],
   },
   {
@@ -110,140 +128,74 @@ const PHISH_EMAILS = [
     fromName: "Daniel Morgan (via OneDrive)",
     fromAddr: "no-reply@onedrive-filesharing.net",
     flagSender: 1,
-    subject: "Daniel Morgan shared “Scholarship Eligibility Review – Fall 2026” with you",
-    preview: "Hi Sam, please review and confirm your information before Friday…",
+    subject: "Daniel Morgan shared “Parking Permit Renewals – Fall 2026” with you",
+    preview: "Hi Sam, your permit is on the list of permits that haven't been renewed…",
     body: `
       <div class="share-card">
         <div class="share-icon" aria-hidden="true">📊</div>
         <div>
           <p class="share-title"><strong>Daniel Morgan</strong> shared a file with you</p>
-          <p class="share-file">Scholarship Eligibility Review – Fall 2026.xlsx</p>
+          <p class="share-file">Parking Permit Renewals – Fall 2026.xlsx</p>
         </div>
       </div>
-      <blockquote><span class="flag" data-flag="2">Hi Sam, your name came up on the eligibility list for the fall award.</span>
-        <span class="flag" data-flag="3">Please review and <strong>confirm your student ID and contact info</strong> before Friday</span> so we can finalize the list. Thanks!</blockquote>
-      <p><a href="#" class="email-btn email-btn-ms email-link flag" data-flag="4" data-href="https://salemstate-sharepoint.com/login?file=scholarship_review.xlsx">Open</a></p>
+      <blockquote><span class="flag" data-flag="2">Hi Sam, your permit is on our list of parking permits that haven't been renewed for this semester.</span>
+        <span class="flag" data-flag="3">Please review your entry and <strong>confirm your campus ID number and vehicle info by Friday</strong>, or your permit will be deactivated.</span> Thanks!</blockquote>
+      <p><a href="#" class="email-btn email-btn-ms email-link flag" data-flag="4" data-href="https://${S.slug}-sharepoint.com/login?file=parking_permit_renewals.xlsx">Open</a></p>
       <p class="fine-print"><span class="flag" data-flag="5">This link will only work for the recipient. Sign in with your university account to view.</span></p>`,
     flags: [
       { title: "Not a real sharing address", text: "Real OneDrive/SharePoint notifications come from a <b>microsoft.com</b> or <b>sharepoint.com</b> address, not <b>onedrive-filesharing.net</b>." },
-      { title: "Unexpected, and aimed at you", text: "Do you know Daniel Morgan? Were you expecting a scholarship file? Attackers use names and topics that feel personal so you don't stop to ask." },
-      { title: "Asks for your information", text: "“Confirm your student ID and contact info before Friday” means handing over personal data on a deadline. That's a classic setup." },
-      { title: "Lookalike login link", text: "<b>salemstate-sharepoint.com</b> sounds official, but it isn't a Salem State or Microsoft site. It's a fake sign-in page built to catch your password." },
+      { title: "Unexpected, and aimed at you", text: "Do you know Daniel Morgan? Would the parking office really send you a spreadsheet through OneDrive? Attackers pick everyday topics that feel personal, so you don't stop to ask." },
+      { title: "Asks for your info, with a threat", text: "“Confirm your ID number and vehicle info by Friday, or your permit will be deactivated” means handing over personal data on a deadline. If you're worried about your permit, check with the parking office directly." },
+      { title: "Lookalike login link", text: `<b>${S.slug}-sharepoint.com</b> sounds official, but it isn't a ${S.name} or Microsoft site. It's a fake sign-in page built to catch your password.` },
       { title: "“Sign in to view”", text: "Asking you to sign in again is the whole point. Once you type your password on their page, they have it." },
+    ],
+  },
+  {
+    id: "phish-mfa-code",
+    fromName: "IT Help Desk",
+    fromAddr: `${S.short.toLowerCase()}.helpdesk@outlook.com`,
+    flagSender: 1,
+    subject: "Action needed: verify your account for this week's security upgrade",
+    preview: "In the next few minutes you'll receive a 6-digit code by text. Reply with it to…",
+    body: `
+      <p>Hello,</p>
+      <p>We are completing a required security upgrade for all faculty, staff, and student accounts this week, and your account is next.</p>
+      <p><span class="flag" data-flag="2">In the next few minutes, you will receive a text message with a 6-digit verification code.</span>
+        <span class="flag" data-flag="3">Please <strong>reply to this email with that code</strong> so we can confirm your identity and finish the upgrade.</span></p>
+      <p><span class="flag" data-flag="4">If we don't receive your code within 30 minutes, your account will be temporarily locked.</span></p>
+      <p><span class="flag" data-flag="5">Thank you for your cooperation,<br>IT Help Desk</span></p>`,
+    flags: [
+      { title: "IT doesn't use Outlook.com", text: `Anyone can make a free <b>outlook.com</b> account with “helpdesk” in the name. Your IT department emails you from <b>@${S.domain}</b>.` },
+      { title: "The text will be real", text: "That's what makes this scam work. The attacker already has your password and is signing in as you right now, so your phone gets a real code from your school's login system." },
+      { title: "Never share a verification code", text: "The code is the last lock on your account. No one, including IT, will ever ask you to read it back or send it to them. Anyone who asks is the person trying to get in." },
+      { title: "Deadline plus a threat", text: "“Within 30 minutes” and “your account will be locked” push you to reply before you think." },
+      { title: "No name, no ticket, no phone number", text: "A real IT request comes from a real person, usually with a ticket number, and you can call the help desk yourself to check. Also notice there's no link: this scam only needs you to reply." },
     ],
   },
 ];
 
-// One of these is chosen at random as the single real email in the main round.
+// The single real email in the main round. (If you add more, one is picked at random.)
 const LEGIT_EMAILS = [
   {
-    id: "legit-registrar",
-    fromName: "Office of the Registrar",
-    fromAddr: "registrar@salemstate.edu",
-    subject: "Spring 2027 registration: check your enrollment time",
-    preview: "Registration for Spring 2027 courses opens Monday, November 2…",
+    id: "legit-starbucks",
+    fromName: "IT Services",
+    fromAddr: `itservices@${S.domain}`,
+    subject: "☕ Free $5 Starbucks gift card: come see us today",
+    preview: "The IT team is out on campus today! Stop by our table to grab a free…",
     body: `
       <p>Hello,</p>
-      <p>Registration for Spring 2027 courses opens <strong>Monday, November 2</strong>, with enrollment times assigned by class year.</p>
-      <p>Before your time slot:</p>
-      <ul>
-        <li>Check your enrollment time and any holds in the student portal.</li>
-        <li>Meet with your advisor to plan your schedule.</li>
-      </ul>
-      <p>Dates and FAQs: <a href="#" class="email-link" data-href="https://www.salemstate.edu/registrar">salemstate.edu/registrar</a></p>
-      <p>Office of the Registrar<br>Salem State University</p>`,
+      <p>The IT team is out on campus today for Cybersecurity Awareness Month! Stop by our table
+        <strong>${EVENT.where}</strong>, <strong>${EVENT.when}</strong>, to say hi, ask questions about keeping your accounts safe,
+        and grab a <strong>free $5 Starbucks gift card</strong> while supplies last.</p>
+      <p>Just bring your campus ID.</p>
+      <p>Want tips before you stop by? <a href="#" class="email-link" data-href="https://www.${S.domain}/it/security">${S.domain}/it/security</a></p>
+      <p>See you there!<br>IT Services<br>${S.fullName}</p>`,
     checks: [
-      "Sent from a real <b>@salemstate.edu</b> address.",
-      "Makes sense: registration really does come up every semester, and the dates are specific.",
-      "The link goes to <b>salemstate.edu</b>, and the email tells you to use the portal you already use. It doesn't hand you a login link.",
-      "No prize, no threat, and no request for your information.",
-    ],
-  },
-  {
-    id: "legit-library",
-    fromName: "SSU Library",
-    fromAddr: "library@salemstate.edu",
-    subject: "Courtesy reminder: 2 items due Friday, Sept 25",
-    preview: "The following items checked out to you are due soon…",
-    body: `
-      <p>Hello,</p>
-      <p>The following items checked out to you are due <strong>Friday, September 25</strong>:</p>
-      <ul>
-        <li><em>Psychology: Themes and Variations</em> (course reserve)</li>
-        <li>USB-C laptop charger (tech loan)</li>
-      </ul>
-      <p>Most items can be renewed once. Renew at the circulation desk or through your library account:
-        <a href="#" class="email-link" data-href="https://www.salemstate.edu/library">salemstate.edu/library</a></p>
-      <p>Thanks,<br>SSU Library Circulation</p>`,
-    checks: [
-      "Sent from a real <b>@salemstate.edu</b> address.",
-      "Lists the exact items and due date, which you can check against your own library account.",
-      "The link goes to <b>salemstate.edu</b>, and you can also handle it in person at the desk.",
-      "The deadline is an ordinary due date, not a threat.",
-    ],
-  },
-  {
-    id: "legit-rec",
-    fromName: "Campus Recreation",
-    fromAddr: "campusrec@salemstate.edu",
-    subject: "Intramural volleyball sign-ups close Friday, Oct 2",
-    preview: "Build a team of 6–10 players and register by Friday…",
-    body: `
-      <p>Hey Vikings!</p>
-      <p>Intramural co-ed volleyball starts <strong>Monday, October 5</strong>. Games are Monday and Wednesday nights in the Rec Center gym.</p>
-      <ul>
-        <li>Teams of 6–10 players</li>
-        <li>Free for all students</li>
-        <li>Register by <strong>Friday, October 2</strong> at the Rec Center front desk or online</li>
-      </ul>
-      <p>Details: <a href="#" class="email-link" data-href="https://www.salemstate.edu/campus-rec">salemstate.edu/campus-rec</a></p>
-      <p>See you on the court,<br>Campus Recreation</p>`,
-    checks: [
-      "Sent from a real <b>@salemstate.edu</b> address.",
-      "There's a deadline, but it's a normal one, with who, what, when, and where spelled out.",
-      "You can sign up in person, and the link goes to <b>salemstate.edu</b>.",
-      "It doesn't ask for a password or any personal information.",
-    ],
-  },
-  {
-    id: "legit-career",
-    fromName: "Career Services",
-    fromAddr: "careers@salemstate.edu",
-    subject: "Fall Career & Internship Fair: Wed, Oct 14",
-    preview: "60+ employers, drop-in résumé reviews, and no registration required…",
-    body: `
-      <p>Hello,</p>
-      <p>The <strong>Fall Career &amp; Internship Fair</strong> is <strong>Wednesday, October 14, 11 AM–2 PM</strong> in the Campus Center.</p>
-      <ul>
-        <li>60+ employers hiring for jobs and internships</li>
-        <li>Drop-in résumé reviews in our office all week</li>
-        <li>No registration required, just bring your student ID</li>
-      </ul>
-      <p>Employer list: <a href="#" class="email-link" data-href="https://www.salemstate.edu/career-services">salemstate.edu/career-services</a></p>
-      <p>Career Services</p>`,
-    checks: [
-      "Sent from a real <b>@salemstate.edu</b> address.",
-      "Names an office, a date, a time, and a place.",
-      "Nothing to “claim” and no sign-in. You just show up with your ID.",
-      "The link goes to <b>salemstate.edu</b>.",
-    ],
-  },
-  {
-    id: "legit-teams",
-    fromName: "Microsoft Teams",
-    fromAddr: "noreply@email.teams.microsoft.com",
-    subject: "Jordan Lee mentioned you in PSY 101 Study Group",
-    preview: "Jordan Lee: @Sam are you still good to meet in the library at 6?",
-    body: `
-      <p><strong>Jordan Lee</strong> mentioned you in <strong>PSY 101 Study Group › General</strong></p>
-      <blockquote>@Sam are you still good to meet in the library at 6? I'll grab a table on the 2nd floor.</blockquote>
-      <p><a href="#" class="email-btn email-btn-teams email-link" data-href="https://teams.microsoft.com/l/message/19:psy101-study-group">Reply in Teams</a></p>
-      <p class="fine-print">You're receiving this because you were mentioned. Manage notifications in Teams settings.</p>`,
-    checks: [
-      "The sender is a real <b>microsoft.com</b> address (<b>email.teams.microsoft.com</b>).",
-      "It makes sense in context: a classmate in a study group you're actually part of.",
-      "The link goes to <b>teams.microsoft.com</b>, the real Teams site.",
-      "No urgency, no reward, no request for information.",
+      `Sent from a real <b>@${S.domain}</b> address that belongs to the IT department.`,
+      "You claim the gift card <b>in person</b> from people you can see. There's nothing to click, no form, and no login.",
+      "It names a specific place and time, and you can check whether the table is really there.",
+      `The only link goes to <b>${S.domain}</b> and is just information. It doesn't ask you to sign in.`,
+      "Free stuff and “while supplies last” aren't automatically red flags. What matters is <b>how</b> you get it. And it's real: come find us at the table!",
     ],
   },
 ];
@@ -251,8 +203,8 @@ const LEGIT_EMAILS = [
 // Arrives after the results screen. Clicking its button triggers "YOU JUST GOT PHISHED".
 const BONUS_EMAIL = {
   id: "bonus-results",
-  fromName: "SSU Security Awareness",
-  fromAddr: "results@ssu-awareness.com",
+  fromName: `${S.short} Security Awareness`,
+  fromAddr: `results@${S.short.toLowerCase()}-awareness.com`,
   flagSender: 1,
   subject: "Your phishing assessment results are ready",
   preview: "Thanks for completing today's Spot the Phish challenge! Your assessment has been…",
@@ -261,15 +213,15 @@ const BONUS_EMAIL = {
     <p>Hi Sam,</p>
     <p><span class="flag" data-flag="2">Thanks for completing today's <strong>Spot the Phish</strong> challenge!</span>
       <span class="flag" data-flag="3">Your assessment has been recorded</span>, and your personalized results report is ready.</p>
-    <p>Your report includes the red flags you missed and tips for keeping your SSU account secure.</p>
-    <p><a href="#" class="email-btn email-link flag" data-flag="4" data-href="https://ssu-awareness.com/results/signin?session=8f3a2c">REVIEW RESULTS</a></p>
+    <p>Your report includes the red flags you missed and tips for keeping your ${S.short} account secure.</p>
+    <p><a href="#" class="email-btn email-link flag" data-flag="4" data-href="https://${S.short.toLowerCase()}-awareness.com/results/signin?session=8f3a2c">REVIEW RESULTS</a></p>
     <p><span class="flag" data-flag="5">Participants who review their results by 5:00 PM today will be entered into the Awareness Week prize drawing.</span></p>
-    <p>Stay safe,<br>SSU Security Awareness Team</p>`,
+    <p>Stay safe,<br>${S.short} Security Awareness Team</p>`,
   flags: [
-    { title: "The sender still isn't Salem State", text: "<b>ssu-awareness.com</b> is not <b>salemstate.edu</b>. It's the same trick as the raffle email, but it's easy to miss when the message feels expected." },
+    { title: `The sender still isn't ${S.name}`, text: `<b>${S.short.toLowerCase()}-awareness.com</b> is not <b>${S.domain}</b>. It's the same lookalike-domain trick you just practiced spotting, but it's easy to miss when the message feels expected.` },
     { title: "Perfect timing", text: "It showed up seconds after you finished. Because you were expecting something like it, you had no reason to be suspicious." },
     { title: "It doesn't add up", text: "The game told you at the start that nothing is saved or sent anywhere. So what “assessment” was recorded?" },
-    { title: "A sign-in link for “results”", text: "The button goes to a sign-in page on <b>ssu-awareness.com</b>. Viewing quiz results should never need your SSU password." },
+    { title: "A sign-in link for “results”", text: `The button goes to a sign-in page on <b>${S.short.toLowerCase()}-awareness.com</b>. Viewing quiz results should never need your ${S.short} password.` },
     { title: "The same old hook", text: "A prize and a deadline are exactly the tactics you just learned to spot. This time they were dressed up in context." },
   ],
 };

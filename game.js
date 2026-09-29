@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  const TIMES = ["10:42 AM", "9:17 AM", "8:03 AM", "Yesterday", "Mon"];
+  const PHISH_PER_GAME = 4;
+  const TIMES = ["10:42 AM", "10:05 AM", "9:17 AM", "8:36 AM", "8:03 AM"];
   const BONUS_DELAY_MS = 2000;
 
   const app = document.getElementById("app");
@@ -41,6 +42,7 @@
   function initials(name) {
     return name
       .replace(/\(.*?\)/g, "")
+      .replace(/^(Prof|Dr)\.\s*/, "")
       .split(/\s+/)
       .filter((w) => /^[A-Za-z]/.test(w) && !/^(of|the|and|&)$/i.test(w))
       .slice(0, 2)
@@ -268,7 +270,7 @@
 
     let icon, title, msg;
     if (correct && clicks === 0) {
-      [icon, title, msg] = ["🛡️", "Phish-proof Viking!", "You found the real email without taking any bait along the way. Nicely done."];
+      [icon, title, msg] = ["🛡️", `Phish-proof ${S.mascot || "pro"}!`, "You found the real email without taking any bait along the way. Nicely done."];
     } else if (correct) {
       [icon, title, msg] = ["🔍", "Found it, but you nibbled.", `You picked the right email, but you clicked a link in ${clicks} phishing email${clicks > 1 ? "s" : ""} while exploring. In a real inbox, one click can be enough.`];
     } else if (clicks === 0) {
@@ -351,11 +353,11 @@
         <div class="card">
           <h3>6 habits that beat phishing</h3>
           <ol class="tips">
-            <li><strong>Check the address, not just the name.</strong> Anyone can call themselves “University Events.” <b>salemstate.edu</b> ≠ <b>salemstate-edu.com</b>.</li>
+            <li><strong>Check the address, not just the name.</strong> Anyone can call themselves “University Events.” <b>${esc(S.domain)}</b> ≠ <b>${esc(S.slug)}-edu.com</b>.</li>
             <li><strong>Hover before you click.</strong> On a phone, press and hold. Does the link go where it says it does?</li>
             <li><strong>Slow down when you feel rushed.</strong> “Limited spots,” “before Friday,” and “your account is at risk” are designed to make you skip thinking.</li>
             <li><strong>Question things that fit a little too well.</strong> An email that shows up right when you expect it deserves a second look, not a free pass.</li>
-            <li><strong>Go there yourself.</strong> Use your bookmark or the portal you always use, not the link in the email.</li>
+            <li><strong>Go there yourself, and never share a code.</strong> Use your bookmark or the portal you always use, not the link in the email. Never give anyone a verification code, not even IT.</li>
             <li><strong>Report it.</strong> ${esc(CONFIG.reportTip)}</li>
           </ol>
         </div>
@@ -370,7 +372,8 @@
 
   function start() {
     const legit = LEGIT_EMAILS[Math.floor(Math.random() * LEGIT_EMAILS.length)];
-    state.emails = shuffle([...PHISH_EMAILS.map((e) => ({ ...e, phish: true })), { ...legit, phish: false }]).map((e, i) => ({
+    const phish = shuffle(PHISH_EMAILS).slice(0, PHISH_PER_GAME);
+    state.emails = shuffle([...phish.map((e) => ({ ...e, phish: true })), { ...legit, phish: false }]).map((e, i) => ({
       ...e,
       time: TIMES[i % TIMES.length],
     }));
@@ -502,5 +505,7 @@
     if (ev.target.closest(".email-link")) hideStatus();
   });
 
+  document.title = `Spot the Phish · ${S.name}`;
+  document.querySelector(".brand-sub").textContent = S.name;
   renderIntro();
 })();

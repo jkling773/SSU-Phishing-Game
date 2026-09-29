@@ -12,6 +12,7 @@ Plain HTML/CSS/JS with no build step. Nothing is stored or sent anywhere.
 | `emails.js` | **All email content.** Edit this file to change emails, red flags, or the final "report it" tip |
 | `game.js` | Game logic |
 | `styles.css` | Styling |
+| `spare-emails.js` | Extra emails that were cut. Not loaded by the game; copy one into `emails.js` to use it |
 
 ## Try it locally
 
@@ -24,13 +25,25 @@ Double-click `index.html` to open it in a browser.
 3. Under **Build and deployment**, choose **Deploy from a branch**, pick `main` and `/ (root)`, then save.
 4. After a minute the game is live at `https://<your-username>.github.io/<repo-name>/`.
 
+## School branding
+
+The school's name, domain, mascot and help desk all come from one setting at the top of `emails.js`:
+
+- `USE_SCHOOL = "generic"` (the default) uses a made-up "State University" everywhere.
+- `USE_SCHOOL = "ssu"` shows Salem State branding.
+
+To preview either version without editing anything, add `?school=generic` or `?school=ssu` to the end of the URL (for example, `index.html?school=generic`).
+
+The page also tells search engines not to index it (`<meta name="robots" content="noindex, nofollow">`), so it's only reachable through the link or QR code.
+
 ## Editing emails
 
 Open `emails.js`:
 
-- **`CONFIG.reportTip`**: replace this with Salem State's real reporting instructions (for example, the IT Help Desk's report address).
-- **`PHISH_EMAILS`**: the phishing emails. All of them appear in the inbox.
-- **`LEGIT_EMAILS`**: the pool of real emails. One is picked at random each game, so replays differ.
+- **`CONFIG.reportTip`** and **`helpDesk`**: update these with the school's real reporting instructions (for example, the IT Help Desk's report address).
+- **`PHISH_EMAILS`**: the 4 phishing emails in the inbox.
+- **`LEGIT_EMAILS`**: the real email, a $5 Starbucks gift card giveaway at the IT table.
+- **`EVENT`**: where and when the real giveaway happens. Match it to your actual table.
 - **`BONUS_EMAIL`**: the contextual "your results are ready" email that arrives after the results screen.
 
 To mark a red flag inside a phishing email, wrap the text in `<span class="flag" data-flag="N">…</span>` and add a matching item to that email's `flags` list. Flags are hidden during play and highlighted on the reveal screen.

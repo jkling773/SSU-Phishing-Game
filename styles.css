@@ -1,4 +1,5 @@
 :root {
+  --navy: #1b365d;
   --red: #b5121b;
   --red-dark: #8e0e15;
   --orange: #e8671c;
@@ -44,7 +45,7 @@ button { font: inherit; color: inherit; }
   justify-content: space-between;
   gap: 12px;
   padding: 12px 20px;
-  background: linear-gradient(90deg, var(--red-dark), var(--red) 60%, var(--orange));
+  background: var(--navy);
   color: #fff;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }

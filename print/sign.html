@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Spot the Phish Sign</title>
+<!-- Printable table sign. Open in a browser and print (Letter, portrait, "Background graphics" on),
+     or use sign.pdf. The QR code points to: https://jkling773.github.io/SSU-Phishing-Game/?school=ssu -->
+<style>
+  @page { size: letter portrait; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e9e7e3; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1f1f23; }
+  .page {
+    width: 8.5in; height: 11in; margin: 0 auto; background: #fff;
+    display: flex; flex-direction: column; overflow: hidden;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .band { background: #1b365d; color: #fff; padding: 0.35in 0.6in 0.32in; text-align: center; }
+  .brand { font-size: 22pt; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .brand span { margin-right: 10px; }
+  .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.3in 0.6in 0.2in; text-align: center; }
+  h1 { font-size: 40pt; line-height: 1.05; margin: 0 0 12px; letter-spacing: -0.01em; }
+  h1 .one { color: #b5121b; }
+  .sub { font-size: 20pt; color: #4a4c52; margin: 0 0 0.3in; }
+  .qr-wrap { border: 6px solid #1b365d; border-radius: 22px; padding: 0.22in; background: #fff; }
+  .qr-wrap svg { display: block; width: 3.4in; height: 3.4in; }
+  .scan { font-size: 18pt; font-weight: 700; margin: 0.22in 0 0.28in; color: #1b365d; }
+  .pills { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 0.3in; }
+  .pill { border: 2px solid #d9d6d0; border-radius: 999px; padding: 5px 14px; font-size: 12pt; font-weight: 600; }
+  .teaser { font-size: 16pt; font-style: italic; color: #b5121b; font-weight: 600; margin: 0; }
+  .foot { border-top: 2px solid #eee; padding: 0.2in 0.6in 0.3in; text-align: center; font-size: 11pt; color: #62646b; }
+  .url { font-family: ui-monospace, Menlo, monospace; color: #1f1f23; font-size: 11.5pt; }
+  @media print { html, body { background: #fff; } }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="band"><div class="brand"><span aria-hidden="true">🎣</span>Spot the Phish</div></div>
+    <div class="main">
+      <h1>Only <span class="one">1</span> of these emails<br>is real.</h1>
+      <p class="sub">The rest are phishing. Can you find it?</p>
+      <div class="qr-wrap"><svg viewBox="0 0 370 370" class="segno"><path transform="scale(10)" class="qrline" stroke="#000" d="M0 0.5h7m3 0h1m2 0h2m1 0h1m1 0h2m2 0h3m5 0h7m-37 1h1m5 0h1m1 0h1m1 0h2m5 0h2m6 0h2m3 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m2 0h2m2 0h4m2 0h3m3 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h1m1 0h1m3 0h2m2 0h2m1 0h2m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m2 0h1m2 0h1m1 0h1m2 0h1m1 0h2m3 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m3 0h5m1 0h1m3 0h2m1 0h1m2 0h1m3 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-29 1h1m1 0h1m1 0h2m4 0h1m3 0h1m2 0h4m-28 1h1m1 0h4m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m2 0h3m3 0h3m1 0h2m1 0h1m-35 1h1m1 0h1m3 0h3m1 0h1m3 0h2m2 0h1m2 0h2m1 0h1m1 0h1m3 0h3m1 0h2m-36 1h2m2 0h4m1 0h1m1 0h1m1 0h2m4 0h1m1 0h2m1 0h1m1 0h5m2 0h1m1 0h1m-37 1h2m1 0h2m2 0h4m1 0h2m2 0h1m3 0h1m2 0h2m1 0h2m1 0h2m3 0h1m-35 1h1m1 0h6m7 0h4m1 0h1m3 0h1m3 0h1m1 0h2m3 0h2m-37 1h2m3 0h1m2 0h3m3 0h1m2 0h1m1 0h2m2 0h1m1 0h5m2 0h1m1 0h2m-35 1h2m1 0h3m3 0h1m1 0h2m2 0h2m1 0h4m1 0h4m1 0h3m1 0h2m1 0h1m-37 1h1m3 0h2m2 0h1m7 0h1m2 0h2m1 0h1m4 0h3m2 0h4m-36 1h1m3 0h1m1 0h6m1 0h3m1 0h1m2 0h2m3 0h1m1 0h1m2 0h1m3 0h1m1 0h1m-37 1h3m4 0h1m1 0h1m1 0h1m8 0h3m2 0h1m1 0h1m1 0h1m1 0h1m1 0h3m-36 1h5m1 0h4m1 0h3m2 0h2m2 0h1m2 0h1m1 0h5m1 0h1m4 0h1m-37 1h2m1 0h1m3 0h1m2 0h1m2 0h2m1 0h3m4 0h3m2 0h1m1 0h1m4 0h2m-37 1h1m2 0h2m1 0h1m3 0h4m3 0h2m1 0h1m3 0h1m1 0h5m1 0h1m-33 1h3m7 0h2m3 0h1m2 0h1m2 0h8m2 0h4m-35 1h3m3 0h1m2 0h1m1 0h1m1 0h1m1 0h2m2 0h1m2 0h2m3 0h1m1 0h1m2 0h1m2 0h2m-37 1h3m4 0h1m1 0h1m1 0h1m1 0h1m2 0h3m7 0h6m2 0h1m1 0h1m-36 1h1m2 0h1m1 0h1m2 0h4m1 0h1m3 0h2m1 0h1m1 0h2m3 0h1m1 0h2m1 0h1m2 0h1m-37 1h4m4 0h1m2 0h4m5 0h1m1 0h2m3 0h2m3 0h5m-37 1h2m1 0h2m1 0h4m1 0h1m3 0h8m1 0h1m2 0h1m2 0h1m1 0h1m2 0h2m-37 1h1m1 0h1m2 0h1m5 0h4m4 0h1m3 0h1m2 0h2m1 0h1m2 0h4m-36 1h1m1 0h2m2 0h2m3 0h3m2 0h1m1 0h3m1 0h1m1 0h2m2 0h5m1 0h3m-29 1h2m1 0h2m1 0h2m1 0h1m2 0h3m4 0h2m3 0h3m-35 1h7m2 0h3m1 0h2m8 0h1m2 0h1m1 0h1m1 0h1m1 0h5m-37 1h1m5 0h1m1 0h4m1 0h1m2 0h2m2 0h2m1 0h6m3 0h2m1 0h1m-36 1h1m1 0h3m1 0h1m1 0h3m1 0h2m4 0h1m1 0h2m1 0h1m3 0h6m2 0h2m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m1 0h2m2 0h4m1 0h4m1 0h3m1 0h2m-36 1h1m1 0h3m1 0h1m3 0h1m1 0h2m1 0h1m5 0h3m1 0h1m1 0h2m2 0h2m1 0h3m-37 1h1m5 0h1m1 0h1m3 0h2m10 0h1m2 0h1m1 0h1m1 0h1m2 0h3m-37 1h7m3 0h4m2 0h5m2 0h2m3 0h1m1 0h1m2 0h1m2 0h1"/></svg></div>
+      <div class="scan">📱 Scan with your phone camera to play</div>
+      <div class="pills">
+        <span class="pill">⏱ About 3 minutes</span>
+        <span class="pill">🔒 No login · nothing saved</span>
+        <span class="pill">👩‍🎓 Students, faculty &amp; staff</span>
+      </div>
+      <p class="teaser">Think you're phish-proof? Stick around for the bonus round.</p>
+    </div>
+    <div class="foot">Can't scan? Go to <span class="url">jkling773.github.io/SSU-Phishing-Game/?school=ssu</span></div>
+  </div>
+</body>
+</html>
